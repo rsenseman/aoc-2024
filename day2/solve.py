@@ -110,14 +110,9 @@ def solve_part1(data):
     return sum(int(level.is_safe) for level in levels)
 
 def solve_part2(data):
-    num_safe = 0
-    for i, line in enumerate(data):
-        level = LevelWithProblemDampener.from_line(line)
-        is_safe = level.is_safe
-        print(f'{i+1}: {is_safe}')
-        if is_safe:
-            num_safe += 1
-    return num_safe
+    levels = [LevelWithProblemDampener.from_line(line) for line in data]
+
+    return sum(int(level.is_safe) for level in levels)
 
 if __name__ == '__main__':
     # data_dirty = get_data('./data_test.txt')
