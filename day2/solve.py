@@ -25,7 +25,7 @@ class Level:
     def from_line(cls, line: List[int], **kwargs):
         return cls(line, **kwargs)
 
-    def is_monotonic_problem(self, delta, sign:str):
+    def is_monotonic_problem(self, current, next, sign:str):
         if sign == 'positive':
             check_function = lambda v: v > 0
         elif sign == 'negative':
@@ -33,10 +33,10 @@ class Level:
         else:
             raise Exception('sign must be `positive` or `negative`')
         
-        return not check_function(delta)
+        return not check_function(next-current)
 
-    def is_scale_problem(self, delta):
-        delta_abs = abs(delta)
+    def is_scale_problem(self, current, next):
+        delta_abs = abs(next-current)
 
         return not (
             (delta_abs <= DELTA_MAX) and (delta_abs >= DELTA_MIN)
@@ -55,8 +55,8 @@ class Level:
         steamroll_counter = 0
 
         for next in the_rest:
-            is_monotonic_problem = self.is_monotonic_problem(next-current, sign=positive_or_negative)
-            is_scale_problem = self.is_scale_problem(next-current)
+            is_monotonic_problem = self.is_monotonic_problem(current, next, sign=positive_or_negative)
+            is_scale_problem = self.is_scale_problem(current, next)
 
             print(steamroll_counter, is_monotonic_problem, is_scale_problem)
             if is_monotonic_problem or is_scale_problem:
@@ -94,17 +94,17 @@ if __name__ == '__main__':
     # answer = solve_part1(data)
     # print(answer)
 
-    data_dirty = get_data()
-    data = clean_data(data_dirty)
-    answer = solve_part1(data)
-    print(answer)
+    # data_dirty = get_data()
+    # data = clean_data(data_dirty)
+    # answer = solve_part1(data)
+    # print(answer)
 
     # data_dirty = get_data('./data_test.txt')
     # data = clean_data(data_dirty)
     # answer = solve_part2(data)
     # print(answer)
 
-    # data_dirty = get_data()
-    # data = clean_data(data_dirty)
-    # answer = solve_part2(data)
-    # print(answer)
+    data_dirty = get_data()
+    data = clean_data(data_dirty)
+    answer = solve_part2(data)
+    print(answer)
