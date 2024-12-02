@@ -25,7 +25,8 @@ class Level:
     def from_line(cls, line: List[int], **kwargs):
         return cls(line, **kwargs)
 
-    def is_monotonic_problem(self, current, next, sign:str):
+    @staticmethod
+    def is_monotonic_problem(current, next, sign:str):
         if sign == 'positive':
             check_function = lambda v: v > 0
         elif sign == 'negative':
@@ -35,7 +36,8 @@ class Level:
         
         return not check_function(next-current)
 
-    def is_scale_problem(self, current, next):
+    @staticmethod
+    def is_scale_problem(current, next):
         delta_abs = abs(next-current)
 
         return not (
