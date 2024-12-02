@@ -19,38 +19,12 @@ def clean_data(data_dirty):
 @dataclass
 class Level:
     data: List[int]
-    
+    max_damps: int = 0
+
     @classmethod
-    def from_line(cls, line: List[int]):
-        return cls(line)
+    def from_line(cls, line: List[int], **kwargs):
+        return cls(line, **kwargs)
 
-    def is_monotonic(self):
-        deltas = [x-y for x,y in zip(self.data[1:], self.data[:-1])]
-
-        is_positive = lambda v: v > 0
-        is_negative = lambda v: v < 0
-
-        return (
-            all(map(is_positive, deltas)) or \
-            all(map(is_negative, deltas))
-        )
-
-    def are_deltas_in_range(self):
-        deltas = [abs(x-y) for x,y in zip(self.data[1:], self.data[:-1])]
-
-        return all(
-            [
-                (v <= DELTA_MAX) and (v >= DELTA_MIN)
-                for v
-                in deltas
-            ]
-        )
-    
-    @property
-    def is_safe(self):
-        return self.is_monotonic() and self.are_deltas_in_range()
-    
-class LevelWithProblemDampener(Level):
     def is_monotonic_problem(self, delta, sign:str):
         if sign == 'positive':
             check_function = lambda v: v > 0
@@ -87,7 +61,7 @@ class LevelWithProblemDampener(Level):
             print(steamroll_counter, is_monotonic_problem, is_scale_problem)
             if is_monotonic_problem or is_scale_problem:
                 steamroll_counter += 1
-                if steamroll_counter > MAX_DAMPS:
+                if steamroll_counter > self.max_damps:
                     return False
                 else:
                     continue
@@ -110,7 +84,7 @@ def solve_part1(data):
     return sum(int(level.is_safe) for level in levels)
 
 def solve_part2(data):
-    levels = [LevelWithProblemDampener.from_line(line) for line in data]
+    levels = [Level.from_line(line, max_damps=MAX_DAMPS) for line in data]
 
     return sum(int(level.is_safe) for level in levels)
 
@@ -120,17 +94,17 @@ if __name__ == '__main__':
     # answer = solve_part1(data)
     # print(answer)
 
-    # data_dirty = get_data()
-    # data = clean_data(data_dirty)
-    # answer = solve_part1(data)
-    # print(answer)
+    data_dirty = get_data()
+    data = clean_data(data_dirty)
+    answer = solve_part1(data)
+    print(answer)
 
     # data_dirty = get_data('./data_test.txt')
     # data = clean_data(data_dirty)
     # answer = solve_part2(data)
     # print(answer)
 
-    data_dirty = get_data()
-    data = clean_data(data_dirty)
-    answer = solve_part2(data)
-    print(answer)
+    # data_dirty = get_data()
+    # data = clean_data(data_dirty)
+    # answer = solve_part2(data)
+    # print(answer)
