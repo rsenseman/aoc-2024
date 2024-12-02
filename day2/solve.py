@@ -67,66 +67,43 @@ class LevelWithProblemDampener(Level):
             (delta_abs <= DELTA_MAX) and (delta_abs >= DELTA_MIN)
         )
     
-
-
-    @property
-    def is_safe_forward(self):
+    def is_safe_one_way(self, forward_or_backward:str, positive_or_negative:str):
         MAX_DAMPS = 1
 
-        for directionality in ['positive', 'negative']:
-            print()
-            steamroll_counter = 0
+        assert forward_or_backward in ('forward', 'backward'), 'forward_or_backward must be `forward` or `backward`'
+        assert positive_or_negative in ('positive', 'negative'), 'positive_or_negative must be `positive` or `negative`'
 
-            current = self.data[0] 
-            for next in self.data[1:]:
-                is_monotonic_problem = self.is_monotonic_problem(next-current, directionality)
-                is_scale_problem = self.is_scale_problem(next-current)
+        if forward_or_backward == 'forward':
+            current, the_rest = self.data[0], self.data[1:]
+        else:
+            current, the_rest = self.data[-1], self.data[-2::-1]
 
-                print(steamroll_counter, is_monotonic_problem, is_scale_problem)
-                if is_monotonic_problem or is_scale_problem:
-                    steamroll_counter += 1
-                    if steamroll_counter > MAX_DAMPS:
-                        break
-                    else:
-                        continue
+        print()
+        steamroll_counter = 0
+
+        for next in the_rest:
+            is_monotonic_problem = self.is_monotonic_problem(next-current, sign=positive_or_negative)
+            is_scale_problem = self.is_scale_problem(next-current)
+
+            print(steamroll_counter, is_monotonic_problem, is_scale_problem)
+            if is_monotonic_problem or is_scale_problem:
+                steamroll_counter += 1
+                if steamroll_counter > MAX_DAMPS:
+                    return False
                 else:
-                    current = next # only basic datatypes can be reassigned without getting miffed here
+                    continue
             else:
-                return True
-            
-        return False
-    
-    @property
-    def is_safe_backward(self):
-        MAX_DAMPS = 1
-
-        for directionality in ['positive', 'negative']:
-            print()
-            steamroll_counter = 0
-
-            current = self.data[-1] 
-            for next in self.data[-2::-1]:
-                is_monotonic_problem = self.is_monotonic_problem(next-current, directionality)
-                is_scale_problem = self.is_scale_problem(next-current)
-
-                print(steamroll_counter, is_monotonic_problem, is_scale_problem)
-                if is_monotonic_problem or is_scale_problem:
-                    steamroll_counter += 1
-                    if steamroll_counter > MAX_DAMPS:
-                        break
-                    else:
-                        continue
-                else:
-                    current = next # only basic datatypes can be reassigned without getting miffed here
-            else:
-                return True
-            
-        return False
+                current = next # only basic datatypes can be reassigned without getting miffed here
+        else:
+            return True
 
     @property
     def is_safe(self):
-        print('--------')
-        return self.is_safe_forward or self.is_safe_backward
+        return any(
+            self.is_safe_one_way(forward_or_backward, positive_or_negative)
+            for forward_or_backward in ['forward', 'backward']
+            for positive_or_negative in ['positive', 'negative']
+        )
     
 def solve_part1(data):
     levels = [Level.from_line(line) for line in data]
