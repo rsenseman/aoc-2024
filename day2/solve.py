@@ -3,6 +3,7 @@ from typing import List
 
 DELTA_MIN = 1
 DELTA_MAX = 3
+MAX_DAMPS = 1
 
 def get_data(input='./data.txt'):
     with open(input) as f:
@@ -68,8 +69,6 @@ class LevelWithProblemDampener(Level):
         )
     
     def is_safe_one_way(self, forward_or_backward:str, positive_or_negative:str):
-        MAX_DAMPS = 1
-
         assert forward_or_backward in ('forward', 'backward'), 'forward_or_backward must be `forward` or `backward`'
         assert positive_or_negative in ('positive', 'negative'), 'positive_or_negative must be `positive` or `negative`'
 
